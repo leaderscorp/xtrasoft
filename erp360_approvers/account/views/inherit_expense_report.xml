@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="inherit_report_expense_sheet" inherit_id="hr_expense.report_expense_sheet">
+            <xpath expr="//div[@class='row justify-content-end']" position="after">
+                  <strong>In Words: </strong><span t-esc="o.amount_in_words"/>s
+            </xpath>
+            <xpath expr="//div[@class='page']" position="after">
+                <div>
+                        <table  style="width:100%;margin-top:80px;">
+                        <tbody >
+                            <tr style="margin:50px;">
+                        		<t t-foreach="o.approver_ids" t-as="approver">
+                        		    <td colspan="99" style="margin:50px;text-align:center">
+                        		        <span>_______________________</span><br/>
+                        		         <span t-field="approver.action_taken_as"/><br/>
+	                                     <span t-field="approver.name"/><br/>
+	                                     <span t-field="approver.authority"/><br/>
+	                                     <span t-field="approver.date"/><br/>
+                                 	</td>
+                                 
+	                         </t>
+                         </tr>
+                         </tbody>
+                         </table>
+                         
+                    </div>
+            </xpath>
+            <xpath expr="//div[@class='page']/p" position="replace">
+                
+            </xpath>
+        </template>
+  </data>
+</odoo>
