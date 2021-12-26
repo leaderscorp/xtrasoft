@@ -1,0 +1,1 @@
+DocumentTypes = [('Vendor Bill','Vendor Bill'),('Customer Bill','Customer Bill'),('Journal Entries','Journal Entries'),('Expenses','Expenses')]

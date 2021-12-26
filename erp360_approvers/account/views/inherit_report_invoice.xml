@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="inherit_report_invoice_document" inherit_id="account.report_invoice_document">
+            <xpath expr="//div[@class='clearfix']" position="after">
+                  <strong>In Words: </strong><span t-esc="amount_in_words"/>
+            </xpath>
+            <xpath expr="//div[@class='page']" position="after">
+                <div>
+                        <table  style="width:100%;margin-top:80px;">
+                        <tbody >
+                            <tr style="margin:50px;">
+                        		<t t-foreach="approver_obj" t-as="approver">
+                        		    <td colspan="99" style="margin:50px;text-align:center">
+                        		        <span>_______________________</span><br/>
+                        		         <span t-field="approver.action_taken_as"/><br/>
+	                                     <span t-field="approver.name"/><br/>
+	                                     <span t-field="approver.authority"/><br/>
+	                                     <span t-field="approver.date"/><br/>
+                                 	</td>
+                                 
+	                         </t>
+                         </tr>
+                         </tbody>
+                         </table>
+                         
+                    </div>
+            </xpath>
+        </template>
+  </data>
+</odoo>

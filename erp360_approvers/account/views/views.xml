@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data> 
+  	<record id="view_erp360_document_approver_tree" model="ir.ui.view">
+            <field name="name">document.approver.tree</field>
+            <field name="model">document.approver</field>
+            <field eval="8" name="priority"/>
+            <field name="arch" type="xml">
+                <tree string="Approver's" editable="bottom">
+                    <field name="sequence" />
+                    <field name="system_user" />
+                    <field name="user_id" attrs="{'required':[('system_user','=',True)]}"/>
+                    <field name="name" attrs="{'required':[('system_user','=',False)],'invisible':[('system_user','=',True)]}"/>
+                    <field name="authority" required="1"/>
+                    <field name="user2_id" />
+                    <field name="authority2" attrs="{'required':[('user2_id','!=',False)]}"/>
+                    <field name="action_taken_as"/>
+                    <field name="document_type"/>
+                </tree>
+            </field>
+        </record>	
+  	          
+	    <record model="ir.ui.view" id="view_erp360_document_approver_kanban">
+            <field name="name">document.approver.kanban</field>
+            <field name="model">document.approver</field>
+            <field name="arch" type="xml">
+                <kanban class="o_account_book_kanban">
+                    <field name="sequence" />
+                    <field name="system_user" />
+                    <field name="user_id"/>
+                    <field name="authority"/>
+                    <field name="user2_id" />
+                    <field name="authority2"/>
+                    <field name="document_type" invisible="1"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                                <div class="oe_kanban_details">
+                                    <strong class="o_kanban_record_title oe_account_heading"><field name="sequence"/>: <field name="user_id"/> (<field name="authority"/>)</strong>
+                                    <div class="o_kanban_tags_section oe_kanban_account_categories"/>
+                                    <t t-if="user2_id">
+	                                    <div>
+	                                    	Deligated: <field name="user2_id"/> (<field name="authority2"/>)
+	                                	</div>
+	                                </t>
+	                             </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+		<record id="action_document_approver_form" model="ir.actions.act_window">
+            <field name="name">Approvers for Post the Vendor Bill</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">document.approver</field>
+            <field name="view_mode">tree,kanban</field>
+            <field name="context">{'default_document_type':'Vendor Bill'}</field>
+            <field name="domain">[('document_type','=','Vendor Bill')]</field>
+            <field name="groups_id" eval="[(4,ref('base.group_erp_manager')),(4,ref('group_approver_manager'))]"></field>
+        </record>
+        
+        <record id="action_document_approver_form_journal_entries" model="ir.actions.act_window">
+            <field name="name">Approvers for Post the Journal Entries</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">document.approver</field>
+            <field name="view_mode">tree,kanban</field>
+            <field name="context">{'default_document_type':'Journal Entries'}</field>
+            <field name="domain">[('document_type','=','Journal Entries')]</field>
+            <field name="groups_id" eval="[(4,ref('base.group_erp_manager')),(4,ref('group_approver_manager'))]"></field>
+        </record>
+        
+        <record id="action_document_approver_form_expenses" model="ir.actions.act_window">
+            <field name="name">Approvers for Post the Expenses</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">document.approver</field>
+            <field name="view_mode">tree,kanban</field>
+            <field name="context">{'default_document_type':'Expenses'}</field>
+            <field name="domain">[('document_type','=','Expenses')]</field>
+            <field name="groups_id" eval="[(4,ref('base.group_erp_manager')),(4,ref('group_approver_manager'))]"></field>
+        </record>
+        
+        <menuitem id="document_approver_menu_main" name="Document Approvers" parent = 'account.menu_finance_configuration'
+                  groups="base.group_erp_manager,group_approver_manager" sequence="2"/>
+                  
+        <menuitem id="document_approver_menu_vednor_bill" name="Vendor Bill Approvers" parent = 'document_approver_menu_main' action="action_document_approver_form"
+                  groups="base.group_erp_manager,group_approver_manager"
+                  sequence="10"/>
+
+        <menuitem id="document_approver_menu_hr_expense" name="Expenses Approvers" parent = 'document_approver_menu_main' action="action_document_approver_form_expenses"
+                  groups="base.group_erp_manager,group_approver_manager"
+                  sequence="20"/>
+                  
+        <menuitem id="document_approver_menu_journal_entries" name="Journal Enteries Approvers" parent = 'document_approver_menu_main' action="action_document_approver_form_journal_entries"
+                  groups="base.group_erp_manager,group_approver_manager"
+                  sequence="30"/>
+                 
+         
+         
+       <record model="ir.ui.view" id="erp360_view_move_form_inherit">
+        <field name="name">account.move.form</field>
+        <field name="model">account.move</field>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="account.view_move_form"></field>
+        <field name="arch" type="xml">
+        	<xpath expr="//notebook" position="after">
+        		<group>
+        			<field name="approver_ids" nolabel="1" mode="kanban">
+        				<kanban create="false" delete="false" class="oe_background_grey o_kanban_dashboard o_salon_kanban">
+        					<field name='sequence' />
+							<field name='name' />
+							<field name='res_id' />
+							<field name='document_type' />
+							<field name='user_id' />
+							<field name='authority' />
+							<field name='action' />
+							<field name='date' />
+							<field name='comment' />
+							<field name='move_id' />
+							<field name='image_128' />
+							<field name='valid_user' />
+							<field name='action_taken_as' />
+							<templates>
+                                  <t t-name="kanban-box">
+									<div t-attf-class="oe_kanban_global_click">
+										<div class="oe_kanban_details">
+											<div class="row">
+												<div class="col-md-3">
+													<div class="o_kanban_image">
+					                                    <img alt="Avatar" t-att-src="kanban_image('res.users', 'image_128', record.user_id.raw_value)" />
+					                                </div>
+												</div>
+												<div class="col-md-5">
+													
+													<div><h2><field name='name' /></h2>
+														<h4><field name='authority' /></h4>
+													</div>
+													<div><field name='action_taken_as' /></div>
+													<t t-if="record.action.value == 'Accept'">
+														<span><strong>Accepted</strong></span>
+													</t>
+													<t t-if="record.action.value == 'Reject'">
+														<span><strong>Rejected</strong></span>
+													</t>
+													<div><field name='date' /></div>
+													<t t-if="record.comment.value">
+														<field name='comment' />
+													</t>
+													
+												</div>
+												<t t-if="record.valid_user.value == 1">
+														<div style="float:right">
+										                    <a class="btn btn-sm btn-success" string="Accept" name="accept" type="object" role="button">
+										                        <i class="fa fa-check" role="img" aria-label="Accept" title="Accept"/>
+										                    </a>
+										                    <a class="btn btn-sm btn-danger" string="Reject" name="reject" type="object" role="button">
+										                        <i class="fa fa-times" role="img" aria-label="Reject" title="Reject"/>
+										                    </a>
+									                </div>
+												</t>
+												<t t-if="record.action.value == 'Accept'">
+													<a class="btn btn-sm btn-success" string="Accepted" role="button"/>
+												</t>
+												<t t-if="record.action.value == 'Reject'">
+													<a class="btn btn-sm btn-danger" string="Rejected" role="button"/>
+												</t>
+													
+											</div>
+										</div>
+									</div>
+									</t>
+                                        
+                                        
+                                        
+                           </templates>
+        				</kanban>
+        				<form>
+        					<sheet>
+        						<group string="comment">
+        						<field name="valid_user" invisible="1"/>
+        							<field name="comment" nolabel="1" attrs="{'readonly':['|',('valid_user','=',0),('valid_user','=',False)]}"/>
+        						</group>
+        					</sheet>
+        				</form>
+        			</field>
+        		</group>
+        	</xpath>
+        	
+        	<!-- <xpath expr="//notebook/page[@id='aml_tab']/field[@name='line_ids']" position="after">
+        		
+        		<group string="Approvers" attrs="{'invisible':[('approver_ids','=',False)]}">
+        			<field name="approver_ids" nolabel="1" mode="kanban" domain="[('document_type','=','Journal Entries')]">
+        				<kanban create="false" delete="false" class="oe_background_grey o_kanban_dashboard o_salon_kanban">
+        					<field name='sequence' />
+							<field name='model' />
+							<field name='res_id' />
+							<field name='document_type' />
+							<field name='user_id' />
+							<field name='authority' />
+							<field name='action' />
+							<field name='date' />
+							<field name='comment' />
+							<field name='move_id' />
+							<field name='image_128' />
+							<field name='valid_user' />
+							<templates>
+                                  <t t-name="kanban-box">
+									<div t-attf-class="oe_kanban_global_click">
+										<div class="oe_kanban_details">
+											<div class="row">
+												<div class="col-md-3">
+													<div class="o_kanban_image">
+					                                    <img alt="Avatar" t-att-src="kanban_image('res.users', 'image_128', record.user_id.raw_value)" />
+					                                </div>
+												</div>
+												<div class="col-md-5">
+													
+													<div><h2><field name='user_id' /></h2>
+														<h4><field name='authority' /></h4>
+													</div>
+													<t t-if="record.action.value == 'Accept'">
+														<span><strong>Accepted</strong></span>
+													</t>
+													<t t-if="record.action.value == 'Reject'">
+														<span><strong>Rejected</strong></span>
+													</t>
+													<div><field name='date' /></div>
+													<t t-if="record.comment.value">
+														<field name='comment' />
+													</t>
+													
+												</div>
+												<t t-if="record.valid_user.value == 1">
+														<div style="float:right">
+										                    <a class="btn btn-sm btn-success" string="Accept" name="accept" type="object" role="button">
+										                        <i class="fa fa-check" role="img" aria-label="Accept" title="Accept"/>
+										                    </a>
+										                    <a class="btn btn-sm btn-danger" string="Reject" name="reject" type="object" role="button">
+										                        <i class="fa fa-times" role="img" aria-label="Reject" title="Reject"/>
+										                    </a>
+									                </div>
+												</t>
+												<t t-if="record.action.value == 'Accept'">
+													<a class="btn btn-sm btn-success" string="Accepted" role="button"/>
+												</t>
+												<t t-if="record.action.value == 'Reject'">
+													<a class="btn btn-sm btn-danger" string="Rejected" role="button"/>
+												</t>
+													
+											</div>
+										</div>
+									</div>
+									</t>
+                                        
+                                        
+                                        
+                           </templates>
+        				</kanban>
+        				<form>
+        					<sheet>
+        						<group string="comment">
+        						<field name="valid_user" invisible="1"/>
+        							<field name="comment" nolabel="1" attrs="{'readonly':['|',('valid_user','=',0),('valid_user','=',False)]}"/>
+        						</group>
+        					</sheet>
+        				</form>
+        			</field>
+        		</group>
+        	</xpath> -->
+        	
+        	</field>
+        </record>
+        
+        <record model="ir.ui.view" id="erp360_view_hr_expense_sheet_form">
+        <field name="name">hr.expense.sheet.form</field>
+        <field name="model">hr.expense.sheet</field>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="hr_expense.view_hr_expense_sheet_form"></field>
+        <field name="arch" type="xml">
+        	<xpath expr="//notebook" position="after">
+        		<group attrs="{'invisible':[('state','not in',['approve','post','done'])]}">
+        			<field name="approver_ids" nolabel="1" mode="kanban">
+        				<kanban create="false" delete="false" class="oe_background_grey o_kanban_dashboard o_salon_kanban">
+        					<field name='sequence' />
+							<field name='name' />
+							<field name='res_id' />
+							<field name='document_type' />
+							<field name='user_id' />
+							<field name='authority' />
+							<field name='action' />
+							<field name='date' />
+							<field name='comment' />
+							<field name='move_id' />
+							<field name='image_128' />
+							<field name='valid_user' />
+							<templates>
+                                  <t t-name="kanban-box">
+									<div t-attf-class="oe_kanban_global_click">
+										<div class="oe_kanban_details">
+											<div class="row">
+												<div class="col-md-3">
+													<div class="o_kanban_image">
+					                                    <img alt="Avatar" t-att-src="kanban_image('res.users', 'image_128', record.user_id.raw_value)" />
+					                                </div>
+												</div>
+												<div class="col-md-5">
+													
+													<div><h2><field name='name' /></h2>
+														<h4><field name='authority' /></h4>
+													</div>
+													<t t-if="record.action.value == 'Accept'">
+														<span><strong>Accepted</strong></span>
+													</t>
+													<t t-if="record.action.value == 'Reject'">
+														<span><strong>Rejected</strong></span>
+													</t>
+													<div><field name='date' /></div>
+													<t t-if="record.comment.value">
+														<field name='comment' />
+													</t>
+													
+												</div>
+												<t t-if="record.valid_user.value == 1">
+														<div style="float:right">
+										                    <a class="btn btn-sm btn-success" string="Accept" name="accept" type="object" role="button">
+										                        <i class="fa fa-check" role="img" aria-label="Accept" title="Accept"/>
+										                    </a>
+										                    <a class="btn btn-sm btn-danger" string="Reject" name="reject" type="object" role="button">
+										                        <i class="fa fa-times" role="img" aria-label="Reject" title="Reject"/>
+										                    </a>
+									                </div>
+												</t>
+												<t t-if="record.action.value == 'Accept'">
+													<a class="btn btn-sm btn-success" string="Accepted" role="button"/>
+												</t>
+												<t t-if="record.action.value == 'Reject'">
+													<a class="btn btn-sm btn-danger" string="Rejected" role="button"/>
+												</t>
+											</div>
+										</div>
+									</div>
+									</t>
+                           </templates>
+        				</kanban>
+        				<form>
+        					<sheet>
+        						<group string="comment">
+        						<field name="valid_user" invisible="1"/>
+        							<field name="comment" nolabel="1" attrs="{'readonly':['|',('valid_user','=',0),('valid_user','=',False)]}"/>
+        						</group>
+        					</sheet>
+        				</form>
+        			</field>
+        		</group>
+        	</xpath>
+        </field>
+        </record>
+        
+  </data>
+</odoo>
